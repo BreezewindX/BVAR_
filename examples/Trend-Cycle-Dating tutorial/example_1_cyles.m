@@ -5,8 +5,13 @@
 
 close all; clc; clear all;
 
-addpath ../../cmintools/
-addpath ../../v4.2
+%% Add paths
+addpath C:\Users\janne\Documents\Gradu\BVAR_\cmintools
+addpath C:\Users\janne\Documents\Gradu\BVAR_\bvartools
+
+pkg load statistics
+pkg load optim
+pkg load signal
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % this program illustrates the use of different filters to compute
@@ -197,16 +202,22 @@ dy7(5:endd,1:size(ddd,2))=ddd(5:endd,1:size(ddd,2))-ddd(1:endd-4,1:size(ddd,2));
 dt7(5:endd,1:size(ddd,2))=ddd(1:endd-4,1:size(ddd,2));
 
 %  long (5  years) differences
-dy8(21:endd,1:size(ddd,2))=ddd(21:endd,1:size(ddd,2))-ddd(1:endd-20,1:size(ddd,2));
-dt8(21:endd,1:size(ddd,2))=ddd(1:endd-20,1:size(ddd,2));
+%dy8(21:endd,1:size(ddd,2))=ddd(21:endd,1:size(ddd,2))-ddd(1:endd-20,1:size(ddd,2));
+%dt8(21:endd,1:size(ddd,2))=ddd(1:endd-20,1:size(ddd,2));
+
+%  long (8  years) differences assignment altered
+dy8(33:endd,1:size(ddd,2))=ddd(33:endd,1:size(ddd,2))-ddd(1:endd-32,1:size(ddd,2));
+dt8(33:endd,1:size(ddd,2))=ddd(1:endd-32,1:size(ddd,2));
 
 for qq=1:size(ddd,2)
     subplot(2,1,1)
     plot(timeplot(1:endd),ddd(1:endd,qq),'g', 'linewidth',2); hold on;
     plot(timeplot(1:endd-1),dt6(1:endd-1,qq),'b-', 'linewidth',2); hold on;
     plot(timeplot(1:endd-4),dt7(1:endd-4,qq),'k-.','linewidth',2); hold on;
-    plot(timeplot(1:endd-20),dt8(1:endd-20,qq),'r:','linewidth',2);hold  off;
-    legend('data','1odtrend','4odtrend','20odtrend')
+%    plot(timeplot(1:endd-20),dt8(1:endd-20,qq),'r:','linewidth',2);hold  off;
+%    legend('data','1odtrend','4odtrend','20odtrend')
+    plot(timeplot(1:endd-32),dt8(1:endd-32,qq),'r:','linewidth',2);hold  off;
+    legend('data','1odtrend','4odtrend','32odtrend')
     if  qq==1
         title('log GDP')
     else
@@ -216,7 +227,8 @@ for qq=1:size(ddd,2)
     plot(timeplot,dy6(1:endd,qq),'b-', 'linewidth',2); hold on;
     plot(timeplot,dy7(1:endd,qq),'k-.','linewidth',2); hold on;
     plot(timeplot,dy8(1:endd,qq),'r:','linewidth',2);hold  off;
-    legend('1odcycle','4odcycle','20odcycle')
+%    legend('1odcycle','4odcycle','20odcycle')
+    legend('1odcycle','4odcycle','32odcycle')
     pause
 end
 close all;
@@ -226,7 +238,8 @@ disp('-------------------------------------------------------')
 disp(' 4) BP filter ')
 disp(' ------------------------------------------------------')
 % dy9-dy10 have  the cyclical components; dt8-dt9 the  trends
-bp1  = 8;  bp2  = 32;   % band pass filter parameters
+% bp1  = 8;  bp2  = 32;   % band pass filter parameters
+bp1  = 8;  bp2  = 64;   % assignment altered pass filter parameters
 % Baxter and King
 dy9=zeros(endd,size(ddd,2)); dy10=dy9;
 for qq=1:size(ddd,2)
@@ -240,7 +253,8 @@ dt9=ddd-dy9;
 % the symmetric filter is the same as bk: cfcpi = cffilter(x,bp1,bp2);
 % details about the  parameters of  the asymmetric filter see cffilter.m
 for qq=1:size(ddd,2)
-    dycf = cffilter(ddd(:,qq),bp1,bp2,1,1,0);
+%    dycf = cffilter(ddd(:,qq),bp1,bp2,1,1,0);
+    dycf = cffilter(ddd(:,qq),bp1,bp2,0,1,0); % without unit root
     dy10(:,qq)=dycf;
 end
 dt10=ddd-dy10;
@@ -271,17 +285,17 @@ for qq=1:size(ddd,2)
     else
         title('log  credit  to  GDP')
     end
- 
+
     subplot(2,1,2)
-    plot(timeplot,dy9(1:endd,qq),'r-', 'linewidth',2); hold on; 
+    plot(timeplot,dy9(1:endd,qq),'r-', 'linewidth',2); hold on;
     plot(timeplot,dy10(1:endd,qq),'b', 'linewidth',2); hold on;
-    plot(timeplot,dy11(1:endd,qq), 'k-', 'linewidth',2);hold on;  
+    plot(timeplot,dy11(1:endd,qq), 'k-', 'linewidth',2);hold on;
     plot(timeplot,dy12(1:endd,qq),'g-','linewidth',2); hold  off;
     legend('BK','CF','WaveBC', 'WavelowBC')
     pause
 end
 %}
- 
+
     subplot(2,1,1)
     plot(timeplot(32:end),dy9(32:endd,1),'r--', 'linewidth',2); hold on;
     plot(timeplot(32:end),dy10(32:endd,1),'b:', 'linewidth',2); hold on;
@@ -289,15 +303,15 @@ end
     plot(timeplot(32:end),dy12(32:endd,1),'g-.','linewidth',2); hold  off;
     legend('BK','CF','WaveBC', 'WavelowBC')
         title('log GDP')
-  
+
     subplot(2,1,2)
-    plot(timeplot(32:end),dy9(32:endd,2),'r-', 'linewidth',2); hold on; 
+    plot(timeplot(32:end),dy9(32:endd,2),'r-', 'linewidth',2); hold on;
     plot(timeplot(32:end),dy10(32:endd,2),'b', 'linewidth',2); hold on;
-    plot(timeplot(32:end),dy11(32:endd,2), 'k-', 'linewidth',2);hold on;  
+    plot(timeplot(32:end),dy11(32:endd,2), 'k-', 'linewidth',2);hold on;
     plot(timeplot(32:end),dy12(32:endd,2),'g-','linewidth',2); hold  off;
     legend('BK','CF','WaveBC', 'WavelowBC')
     title('log  credit  to  GDP')
- 
+
     pause
 
 
@@ -310,8 +324,10 @@ disp(' -----------------------------------------------')
 % e(t+h) is  the  cyclical
 % loose  h+d  observations
 % parameters
-h=8; % number  of  horizons  forward
-d=4; %  number  of  lags
+% h=8; % number  of  horizons  forward
+h=12; % assignment altered value
+% d=4; %  number  of  lags
+d=6; %  number  of  lags
 gg=1;  %  plot  cyclical
 ff=1;  % include  constant in  the regression
 [dy13, dt13]=hamfilter(ddd,h,d,ff,gg,timeplot,varnames);
@@ -338,9 +354,9 @@ options.burnin   = 30000;    % MCMC parameter: number  of  burn-in
 options.rhoyes   = 0;        % if =1;  allow  correlation between trend and  cycle
 
 % prior first moments
-% prior mean trend drift 
+% prior mean trend drift
 options.mu0 = 0.1;
-% prior mean cycle AR1 and AR2 
+% prior mean cycle AR1 and AR2
 options.phi0 = [0.2 0.2]';
 % prior mean VARIANCE cycle
 options.sigc2 = 0.5;
@@ -370,8 +386,8 @@ close all;
 disp(' ------------------------------------------------------')
 disp(' 7b) univariate UC Local linear filter')
 disp(' ------------------------------------------------------')
-% model  
-% from the UC of the form 
+% model
+% from the UC of the form
 % a(t)  = ph1 a(t-1) + ... + phip a(t-p) + ea(t ) [transition 1]
 % b(t)  = c(t-1)    + b(t-1) + eb(t);             [transition 2]
 % c(t)  = c(t-1)             + ec(t);             [transition 3]
@@ -379,7 +395,7 @@ disp(' ------------------------------------------------------')
 
 opts.time = timeplot;
 lags  = 2;
-% AR1[Cycle] AR2[Cycle] STD(a)[Cycle]  STD(b)[Trend]  STD(c)[Trend] 
+% AR1[Cycle] AR2[Cycle] STD(a)[Cycle]  STD(b)[Trend]  STD(c)[Trend]
 opts.ub = [0.6 0.6 3 3 3];
 opts.lb = [0.01 0.01 0.05 0.05 0.05];
 opts.max_compute = 2;
@@ -418,8 +434,9 @@ disp(' 8) univariate BN filter')
 disp('-------------------------------------------------')
 % loose  1+nlags  observations
 % parameters
-lags= 2;  % number  of  lags  in  the  autoregression (keep  it  small
+% lags= 2;  % number  of  lags  in  the  autoregression (keep  it  small
 %  otherwise  estimated  long run  mean  is  wrong).
+lags=1;   % assignment altered
 ff=1;     % include  constant in  the  autoregression
 gg=1;     % plot cyclical
 mm=1;     % =1 use estimate  mean;  =0 use  long run mean
@@ -469,7 +486,7 @@ for qq=1:size(ddd,2)
     plot(timeplot,dy17(1:endd,qq),'b', 'linewidth',2); hold on;
     plot(timeplot,dy18(1:endd,qq), 'g-.', 'linewidth',2);hold  off; axis  tight;
     legend('BP','HP')
-    
+
     pause
     close all
 end
