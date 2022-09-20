@@ -5,7 +5,10 @@
 
 close all; clc; clear all;
 
-%% Add paths
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Add paths and Octave packages, not everything works though. %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 addpath C:\Users\janne\Documents\Gradu\BVAR_\cmintools
 addpath C:\Users\janne\Documents\Gradu\BVAR_\bvartools
 
@@ -351,7 +354,8 @@ options.figg     = 1;        % 1: plot figures  of  series+trend/cyclical
 options.noprint  = 0;        % 0: print  estimates
 options.nsims    = 5000;     % MCMC parameter: number  of simulations
 options.burnin   = 30000;    % MCMC parameter: number  of  burn-in
-options.rhoyes   = 0;        % if =1;  allow  correlation between trend and  cycle
+%options.rhoyes   = 0;        % if =1;  allow  correlation between trend and  cycle
+options.rhoyes   = 1;        % assignment altered
 
 % prior first moments
 % prior mean trend drift
