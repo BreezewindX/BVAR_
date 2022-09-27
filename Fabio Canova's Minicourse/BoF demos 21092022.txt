@@ -1,0 +1,45 @@
+21.9.2022 
+Antti Luoma (kesäharjoittelija, aloittaa jatko-opinnot syksyllä 2022)
+
+"Permanent and transitory supply and demand shocks in the Euro area"
+
+combined sign and zero restrictions
+(need mutually exclusive restrictions)
+
+GDP
+price level
+employment
+investment
+
+IRF; FED, hist, shock series
+
+average of the variance is not the variance of the average (?)
+
+Implies that in the long-run, the Phillips curve is not vertical (comment by Canova).
+
+=========================
+
+22.9.2022
+"Macroeconomic effects of countercyclical capital buffers across structural models"
+Hecker, Jang, Rubio, Verona, Sept 2022
+
+Aims to unify the approach to study one specific macroprudential rule, namely CCyB rules (from Basel III)
+
+(Lambda = loss function)
+
+=========================
+
+23.9.2022
+
+Making empirical work is hard.
+Which method allows for least distortion?
+Misspecification will always be there.
+
+Trend and cycle restrictions
+Steady-state-VAR setup (VAR where everything is deviation from the steady-state (growth path)
+
+Gaps are not observable
+
+VAR and local projections are asymptotically equivalent, if...
+- VAR has been correctly specified
+- (dig the other one from slides)

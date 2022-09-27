@@ -8,8 +8,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all; clc;  clear;
 
-addpath ../../cmintools/
-addpath ../../bvartools/
+addpath C:\Users\janne\Documents\Gradu\BVAR_\cmintools
+addpath C:\Users\janne\Documents\Gradu\BVAR_\bvartools
+
+pkg load statistics
+pkg load optim
+pkg load signal
 
 %% Load the data
 [a,b,c] = xlsread('./crypto_all','price');
@@ -27,7 +31,7 @@ timestr = b(2:end,1);
 cryptonames = b(1,2:end);
 
 % 1. medium cross-section
-% 12 cryptocurrencies starting in 2018/01/01 
+% 12 cryptocurrencies starting in 2018/01/01
 sel1 = {'Binance Coin','Bitcoin Cash','Bitcoin','Cardano','Dash',...
 'EOS','Ethereum','Ethereum Classic','IOTA','Litecoin',...
     'Monero','NEM','Neo','Qtum','Stellar','TRON','VeChain','XRP','Zcash'};
@@ -102,7 +106,7 @@ set(gcf,'position' ,[50 50 900 550])
 % STR_RECAP = ['./vol'];
 % saveas(gcf,STR_RECAP,'fig');
 % savefigure_pdf([STR_RECAP '.pdf']);
- 
+
 %% select the data to use for connectedness
 
 sample = 1; % large T short N log prices
@@ -130,7 +134,7 @@ elseif sample ==2 % short T large N
     dirname = ['.\results_h' num2str(options.nethor) '\prices\smallTlargeN'];
     %dirname = '.\results\prices\smallTlargeN';
     selection = sel2;
-    
+
 elseif sample ==3 % volatility sample 1
     y = vol1;
     cryptonames_ = cryptonames(indx1);
@@ -180,10 +184,10 @@ options.minn_prior_lambda  = 0.1;
 % options.minn_prior_muu     = 0.1;
 
 % activate the Connectedness measures
-options.connectedness  = 1; % Pesaran-Shin Identification 
+options.connectedness  = 1; % Pesaran-Shin Identification
 % options.connectedness  = 2; % Alternative Identification - default recursive
 % options.signs{1}     = 'y(3,1:3,1)>0'; % BITCOIN up in period 1 to 3
-% options.signs{2}     = 'y(7,1:3,1)<0'; % ETHEREUM down in period 1 to 3 
+% options.signs{2}     = 'y(7,1:3,1)<0'; % ETHEREUM down in period 1 to 3
 
 lags          = 3;
 options.K     = 1000;
@@ -246,24 +250,24 @@ inxfromunit2all = nan(T_,length(cryptonames_),3);
 wb = waitbar(0, 'Rolling index');
 
 while dd_ + W < T_
-    
+
     dd_   = dd_+1;
     span = dd_ : W+dd_;
     bvar0         = bvar_(y(span,:),lags,opts);
     inx(dd_+W,1) = bvar0.Ridge.Connectedness.Index;
     inx(dd_+W,2) = bvar0.Lasso.Connectedness.Index;
     inx(dd_+W,3) = bvar0.ElasticNet.Connectedness.Index;
-    
+
     inxfromall2unit(dd_+W,:,1) = bvar0.Ridge.Connectedness.FromAllToUnit;
     inxfromall2unit(dd_+W,:,2) = bvar0.Lasso.Connectedness.FromAllToUnit;
     inxfromall2unit(dd_+W,:,3) = bvar0.ElasticNet.Connectedness.FromAllToUnit;
-    
+
     inxfromunit2all(dd_+W,:,1) = bvar0.Ridge.Connectedness.FromUnitToAll;
     inxfromunit2all(dd_+W,:,2) = bvar0.Lasso.Connectedness.FromUnitToAll;
     inxfromunit2all(dd_+W,:,3) = bvar0.ElasticNet.Connectedness.FromUnitToAll;
-    
+
     waitbar(dd_/(T_-W), wb);
-    
+
 end
 
 close(wb)
@@ -291,40 +295,40 @@ step_plot = 300;
 tmp_str = b(tstart:step_plot:end,1);
 
 for sel = 1 : length(selection)
-    
-    figure('Name',selection{sel})   
-    
+
+    figure('Name',selection{sel})
+
     subplot(2,2,1)
     icrypto = find(strcmp(selection{sel},cryptonames_));
-    
+
     plot(time(tstart:end), exp(y(:, icrypto)) );
-    set(gca,'Xtick',time(tstart:step_plot:end))    
+    set(gca,'Xtick',time(tstart:step_plot:end))
     set(gca,'Xticklabel',tmp_str)
     title([selection{sel} '- USD price' ])
     axis tight
-    
+
     subplot(2,2,2)
     plot(time(tstart:end), squeeze(inxfromunit2all(:,icrypto,1:3)))
     axis tight
     set(gca,'Xtick',time(tstart:step_plot:end))
-    set(gca,'Xticklabel',tmp_str)   
+    set(gca,'Xticklabel',tmp_str)
     title(['From ' selection{sel}  ' to All (Spillover)'])
-    
+
     subplot(2,2,3)
     plot(time(tstart:end), squeeze(inxfromall2unit(:,icrypto,1:3)))
     set(gca,'Xtick',time(tstart:step_plot:end))
     set(gca,'Xticklabel',tmp_str)
     title(['From All to ' selection{sel} ' (Vulnerability)'])
     axis tight
-    legend('Ridge','Lasso','ElasticNet')   
-    
+    legend('Ridge','Lasso','ElasticNet')
+
     set(gcf,'position' ,[50 50 900 450])
 
     STR_RECAP = [ dirname '/RolllingIndex_' selection{sel}];
     saveas(gcf,STR_RECAP,'fig');
     savefigure_pdf([STR_RECAP '.pdf']);
 
-    
+
 end
 
 
